@@ -1,0 +1,83 @@
+<head>
+   <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+<h1 class="upper">To-Do List</h1>
+
+<div id="Adder">
+   <form method="post" action="/add">
+      <label for="date">Due Date (YYYY-MM-DD):</label>
+      <input type="text" name="date" id="date" placeholder="2001-12-29">
+      <label for="description">Description:</label>
+      <input type="text" name="description" id="description" placeholder="Description">
+      <input type="submit" value="Add Task" id="submit">
+   </form>
+</div>
+
+<span id="main"></span>
+
+<h1 class="lower">Stupid To-Do List Coroporation</h1>
+
+<script>
+   let redir = "{{redir|tojson}}";
+   if(redir==1){
+      location.replace("/");
+   }
+   
+   let tasks = '{{data|tojson}}'.slice(1,-1).split("\n");
+   let tasksO = [];
+   let tasksP = [];
+   let tasksC = [];
+   for(let i=0; i<tasks.length-1; i++)
+   {
+      let task = tasks[i];
+      let taskParts = task.split(" ");
+      if(taskParts[2] != "C"){
+         tasksC.push(task);
+         continue;
+      }
+      if(Date.parse(taskParts[1]) > Date.parse(taskParts[3])){
+         tasksO.push(task);
+         continue;
+      }
+      else{
+         tasksP.push(task);
+         continue;
+      }
+   }
+   document.getElementById("main").innerHTML = "";
+   document.getElementById("main").innerHTML += "<h2>Overdue Tasks</h2>";
+   for(let o=0; o<tasksO.length; o++)
+   {
+      let taskParts = tasksO[o].split(" ");
+      let completeLink = "<a href='javascript:location.replace(\"/mark_complete/\"+"+taskParts[0]+");'>Complete</a>";
+      let deleteLink   = "<a href='javascript:location.replace(\"/delete_task/\"+"+taskParts[0]+");'>Delete</a>";
+      let description = taskParts[4];
+      for(let n=5; n<taskParts.length; n++){//for all words after first part of description
+         description +=" "+taskParts[n];    //append words to description (with spaces)
+      }
+      document.getElementById("main").innerHTML += "<div>"+taskParts[3]+": "+description+" "+completeLink+" "+deleteLink+"</div>";
+   }
+   document.getElementById("main").innerHTML += "<h2>Pending Tasks</h2>";
+   for(let p=0; p<tasksP.length; p++)
+   {
+      let taskParts = tasksP[p].split(" ");
+      let completeLink = "<a href='javascript:location.replace(\"/mark_complete/\"+"+taskParts[0]+");'>Complete</a>";
+      let deleteLink   = "<a href='javascript:location.replace(\"/delete_task/\"+"+taskParts[0]+");'>Delete</a>";
+      let description = taskParts[4];
+      for(let n=5; n<taskParts.length; n++)
+         description +=" "+taskParts[n];
+      document.getElementById("main").innerHTML += "<div>"+taskParts[3]+": "+description+" "+completeLink+" "+deleteLink+"</div>";
+   }
+   document.getElementById("main").innerHTML += "<h2>Complete Tasks</h2>";
+   for(let c=0; c<tasksC.length; c++)
+   {
+      let taskParts = tasksC[c].split(" ");
+      let deleteLink   = "<a href='javascript:location.replace(\"/delete_task/\"+"+taskParts[0]+");'>Delete</a>";
+      let description = taskParts[4];
+      for(let n=5; n<taskParts.length; n++)
+         description +=" "+taskParts[n];
+      document.getElementById("main").innerHTML += "<div>"+taskParts[2]+": "+description+" "+deleteLink+"</div>";
+   }
+   document.getElementById("main").innerHTML += "<p id='spacer'/>";
+</script>
