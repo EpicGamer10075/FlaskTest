@@ -1,0 +1,30 @@
+<div>
+	<h1>CSCI 4830 Tech Excercise</h1>
+	<button onclick="dbSet1()">dbSet1</button>
+	<button onclick="dbSet2()">dbSet2</button>
+	<p class="db">Database: X</p>
+</div>
+
+<script type="text/javascript" src="/static/js/scripts.js">//loads the functions from scripts.js</script>
+<script>
+	function dbSet1() {
+		changeDB("1");
+	}
+	function dbSet2() {
+		changeDB("2");
+	}
+	function changeDB(data) {
+		fetch('/process-data', { //sends request to doom.py
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify({ text: data })
+		})
+		.then(response => response.text())
+		.then(result => { //gets result, and uses that here
+			document.querySelector("p.db").innerHTML = "Database: " + result;
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+	}		
+</script>
