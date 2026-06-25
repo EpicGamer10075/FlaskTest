@@ -35,4 +35,4 @@ def process_data():
     return result #returns name retrieved from database
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=15271, debug=True)
+    app.run(host='0.0.0.0', port=15271, debug=True) #Branch from Evan
